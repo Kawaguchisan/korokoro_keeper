@@ -20,14 +20,26 @@ GREEN_LED_GPIO_OUTPUT = 14
 ORANGE_LED_GPIO_OUTPUT = 15
 RED_LED_GPIO_OUTPUT = 18
 
-CHANGE_FUNCTION_BUTTON_GPIO_INPUT = 17
-BALL_FIRING_BUTTON_GPIO_INPUT = 27
+KEEPER_MOTOR_GPIO_OUTPUT1 = 20
+KEEPER_MOTOR_GPIO_OUTPUT2 = 21
 
 FIRING_MOTOR_GPIO_OUTPUT1 = 23 
 FIRING_MOTOR_GPIO_OUTPUT2 = 24
 
-KEEPER_MOTOR_GPIO_OUTPUT1 = 20
-KEEPER_MOTOR_GPIO_OUTPUT2 = 21
+CHANGE_FUNCTION_BUTTON_GPIO_INPUT = 17
+BALL_FIRING_BUTTON_GPIO_INPUT = 27
+
+# left to right
+GOAL_BUTTON_1_GPIO_INPUT = 4
+GOAL_BUTTON_2_GPIO_INPUT = 5
+GOAL_BUTTON_3_GPIO_INPUT = 6
+GOAL_BUTTON_4_GPIO_INPUT = 7
+GOAL_BUTTON_5_GPIO_INPUT = 12
+GOAL_BUTTON_6_GPIO_INPUT = 13
+GOAL_BUTTON_7_GPIO_INPUT = 16
+GOAL_BUTTON_8_GPIO_INPUT = 19
+GOAL_BUTTON_9_GPIO_INPUT = 22
+GOAL_BUTTON_10_GPIO_INPUT = 25 
 
 ANGLE_SENSOR_MCP3008_INPUT = MCP3008(channel = 0, device = 0)
 
@@ -49,6 +61,16 @@ GPIO.setup(KEEPER_MOTOR_GPIO_OUTPUT2, GPIO.OUT) # Firing motor2
 # input:
 GPIO.setup(CHANGE_FUNCTION_BUTTON_GPIO_INPUT, GPIO.IN)  # Change Function Button
 GPIO.setup(BALL_FIRING_BUTTON_GPIO_INPUT, GPIO.IN)  # Ball Firing Button
+GPIO.setup(GOAL_BUTTON_1_GPIO_INPUT, GPIO.IN)  # Goal Button
+GPIO.setup(GOAL_BUTTON_2_GPIO_INPUT, GPIO.IN)  # Goal Button
+GPIO.setup(GOAL_BUTTON_3_GPIO_INPUT, GPIO.IN)  # Goal Button
+GPIO.setup(GOAL_BUTTON_4_GPIO_INPUT, GPIO.IN)  # Goal Button
+GPIO.setup(GOAL_BUTTON_5_GPIO_INPUT, GPIO.IN)  # Goal Button
+GPIO.setup(GOAL_BUTTON_6_GPIO_INPUT, GPIO.IN)  # Goal Button
+GPIO.setup(GOAL_BUTTON_7_GPIO_INPUT, GPIO.IN)  # Goal Button
+GPIO.setup(GOAL_BUTTON_8_GPIO_INPUT, GPIO.IN)  # Goal Button
+GPIO.setup(GOAL_BUTTON_9_GPIO_INPUT, GPIO.IN)  # Goal Button
+GPIO.setup(GOAL_BUTTON_10_GPIO_INPUT, GPIO.IN)  # Goal Button
 
 # -------------------------------------------------------------
 
@@ -82,12 +104,42 @@ def get_ball_firing_button_condition():
   else:
     return 0
 
+def get_goal_button_condition():
+  if GPIO.input(GOAL_BUTTON_1_GPIO_INPUT) == GPIO.HIGH:
+    return 1
+  else:
+    return 0
+
 def get_angle():
   angle = ANGLE_SENSOR_MCP3008_INPUT.value
   return round(angle, 5)
 
 def get_goal_location():
-  return "0"
+  start = time.time()
+  for i in range(200000):
+    if GPIO.input(GOAL_BUTTON_1_GPIO_INPUT) == GPIO.HIGH:
+      return '1'
+    if GPIO.input(GOAL_BUTTON_2_GPIO_INPUT) == GPIO.HIGH:
+      return '2'
+    if GPIO.input(GOAL_BUTTON_3_GPIO_INPUT) == GPIO.HIGH:
+      return '3'
+    if GPIO.input(GOAL_BUTTON_4_GPIO_INPUT) == GPIO.HIGH:
+      return '4'
+    if GPIO.input(GOAL_BUTTON_5_GPIO_INPUT) == GPIO.HIGH:
+      return '5'
+    if GPIO.input(GOAL_BUTTON_6_GPIO_INPUT) == GPIO.HIGH:
+      return '6'
+    if GPIO.input(GOAL_BUTTON_7_GPIO_INPUT) == GPIO.HIGH:
+      return '7'
+    if GPIO.input(GOAL_BUTTON_8_GPIO_INPUT) == GPIO.HIGH:
+      return '8'
+    if GPIO.input(GOAL_BUTTON_9_GPIO_INPUT) == GPIO.HIGH:
+      return '9'
+    if GPIO.input(GOAL_BUTTON_10_GPIO_INPUT) == GPIO.HIGH:
+      return '10'
+  elapsed_time = time.time() - start
+  print ("elapsed_time:{0}".format(elapsed_time) + "[sec]")
+  return 'None'
 
 # -------------------------------------------------------------
 
@@ -111,21 +163,15 @@ def led_default_light_up():
     GPIO.output(GREEN_LED_GPIO_OUTPUT,  False)
     GPIO.output(ORANGE_LED_GPIO_OUTPUT, True)
 
-def fire_a_ball():
-  # move downward
-  GPIO.output(FIRING_MOTOR_GPIO_OUTPUT1, True)
-  GPIO.output(FIRING_MOTOR_GPIO_OUTPUT2, False)
-  time.sleep(0.5)  
+def fire_a_ball(move):
+   if (move):
+      # move downward
+      GPIO.output(FIRING_MOTOR_GPIO_OUTPUT1, False)
+      GPIO.output(FIRING_MOTOR_GPIO_OUTPUT2, True)
+      time.sleep(0.4)
 
-  # stop
-  GPIO.output(FIRING_MOTOR_GPIO_OUTPUT1, False)
-  GPIO.output(FIRING_MOTOR_GPIO_OUTPUT2, False)
-  time.sleep(0.3)  
-
-  # move upward
-  GPIO.output(FIRING_MOTOR_GPIO_OUTPUT1, False)
-  GPIO.output(FIRING_MOTOR_GPIO_OUTPUT2, True)
-  time.sleep(0.5)  
+      GPIO.output(FIRING_MOTOR_GPIO_OUTPUT1, False)
+      GPIO.output(FIRING_MOTOR_GPIO_OUTPUT2, False)
 
 def move_a_keeper(moving_time):
   if moving_time > 0:
@@ -137,7 +183,7 @@ def move_a_keeper(moving_time):
   elif moving_time < 0:
     GPIO.output(KEEPER_MOTOR_GPIO_OUTPUT1, False)
     GPIO.output(KEEPER_MOTOR_GPIO_OUTPUT2, True)
-    time.sleep(moving_time)  
+    time.sleep(-moving_time)  
     GPIO.output(KEEPER_MOTOR_GPIO_OUTPUT1, False)
     GPIO.output(KEEPER_MOTOR_GPIO_OUTPUT2, False)
 
@@ -175,7 +221,8 @@ while True:
   try:
     change_function_button_condition = get_change_function_button_condition()
     ball_firing_button_condition = get_ball_firing_button_condition()
-    print(ball_firing_button_condition)
+    print('ball_firing_button_condition: ' + str(ball_firing_button_condition))
+    print('change_function_button_condition: ' + str(change_function_button_condition))
 
     if change_function_button_condition == 1:
       change_function_condition()
@@ -220,18 +267,16 @@ while True:
 	print('angle:' + str(angle))
 
         # fire a ball (operation moter)
-        fire_a_ball()
+        fire_a_ball(True)
 
 	# ------------------------------------------------------------------------------ TODO -----------------------------------------------------------------------------------
 	# move keeper (operation moter) : rondomly
 	moving_time = random.uniform(1.25, -1.25)
         move_a_keeper(moving_time)
-  	time.sleep(0.3)  
-        move_a_keeper(-moving_time)
 
         # get goal_location
 	goal_location = get_goal_location()
-	# ------------------------------------------------------------------------------ TODO -----------------------------------------------------------------------------------
+        print('goal_location: ' + goal_location)
 
         # write Test CSV file
 	data = pd.DataFrame([[angle, goal_location]])
@@ -241,13 +286,15 @@ while True:
 
         # calculate and write Function CSV file
 	# write_function_csv_file()
-	
-	# TODO: ------------------------------
+
+        # fire a ball (operation moter) : return to	
+        fire_a_ball(False)
 	# move keeper (operation moter) : return to
-	# TODO: ------------------------------
+        move_a_keeper(-moving_time)
 
         # light down red LED
     	GPIO.output(RED_LED_GPIO_OUTPUT, False)
+	# ------------------------------------------------------------------------------ TODO -----------------------------------------------------------------------------------
 
     time.sleep(0.5)
 
