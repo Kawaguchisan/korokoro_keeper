@@ -271,7 +271,7 @@ while True:
 
 	# ------------------------------------------------------------------------------ TODO -----------------------------------------------------------------------------------
 	# move keeper (operation moter) : rondomly
-	moving_time = random.uniform(1.25, -1.25)
+	moving_time = random.uniform(1.3, -1.3)
         move_a_keeper(moving_time)
 
         # get goal_location
