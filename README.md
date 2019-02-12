@@ -6,14 +6,34 @@
 
 ## ファイル構成
 
-- function_data.csv
-- firing_operation.py	ランダムにキーパー動かすところまで	4 months ago
-- function_data.csv	Completed	4 months ago
-- get_angle.py	ランダムにキーパー動かすところまで	4 months ago
-- grovepi.py	ランダムにキーパー動かすところまで	4 months ago
-- grovepi.pyc	ランダムにキーパー動かすところまで	4 months ago
-- keeper_operation.py	ランダムにキーパー動かすところまで	4 months ago
-- main.py	Completed	4 months ago
-- push_button.py	ボールスイッチのところまで	4 months ago
-- test_data.csv	Completed	4 months ago
-- watch_data.sh
+### function_data.csv
+
+学習した結果を格納するファイル。
+具体的には、 "切片" と "傾き" を保存する。
+
+### grovepi.py / grovepi.pyc
+
+ラズベリーパイ上で動かすのに必要なファイル。
+
+### watch_data.sh
+
+各 CSV ファイルの中身を 約 2秒ごとに 出力するプログラム。
+
+### main.py
+
+メインプログラム。
+このファイルを実行することにより、制御を行う。
+
+## 実行の方法
+
+1. 本リポジトリまで移動する。お借りしたラズベリーパイ上では、 "~/Desktop/Kawaguchisan/korokoro_keeper" に存在するので、以下のコマンドで行けるかなと。
+
+`$ cd ~/Desktop/Kawaguchisan/korokoro_keeper"
+
+2. 監視用 シェルスクリプト を実行する。
+
+`$ sh watch_data.sh`
+
+3. メインプログラムを実行する。（言わずもがなですが、ターミナル 2つ 開く必要性があります。）
+
+`$ python main.py`
