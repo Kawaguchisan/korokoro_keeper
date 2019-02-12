@@ -28,12 +28,12 @@
 
 1. 本リポジトリまで移動する。お借りしたラズベリーパイ上では、 "~/Desktop/Kawaguchisan/korokoro_keeper" に存在するので、以下のコマンドで行けるかなと。
 
-`$ cd ~/Desktop/Kawaguchisan/korokoro_keeper"
+`$ cd ~/Desktop/Kawaguchisan/korokoro_keeper"`
 
 2. 監視用 シェルスクリプト を実行する。
 
 `$ sh watch_data.sh`
 
-3. メインプログラムを実行する。（言わずもがなですが、ターミナル 2つ 開く必要性があります。）
+3. メインプログラムを実行する。（言わずもがなですが、監視用と両方実行する場合には、 ターミナルを 2つ 開く必要性があります。）
 
 `$ python main.py`
